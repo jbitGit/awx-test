@@ -1,8 +1,29 @@
-- name: Install Python
+---
+- name: Ensure Python 3 is installed
   hosts: all
-  become: yes
+  become: yes  # Ensure we have sudo privileges
   tasks:
-    - name: Install Python
+    - name: Check if Python 3 is installed
+      command: python3 --version
+      register: python_version
+      ignore_errors: yes
+
+    - name: Install Python 3 if not installed
       package:
-        name: python
+        name: python3
         state: present
+      when: python_version.failed
+
+    - name: Ensure pip3 is installed
+      package:
+        name: python3-pip
+        state: present
+
+    - name: Verify python3 installation
+      command: python3 --version
+      register: python_version_check
+      changed_when: false
+
+    - name: Show python3 version after installation
+      debug:
+        msg: "Installed Python 3 version: {{ python_version_check.stdout }}"
