@@ -1,0 +1,11 @@
+- name: Install atop
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Install atop on Ubuntu/Debian
+      when: ansible_os_family == "Debian"
+      apt:
+        name: atop
+        state: present
+        update_cache: yes
